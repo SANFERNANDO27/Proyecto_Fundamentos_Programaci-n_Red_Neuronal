@@ -19,7 +19,7 @@ El algoritmo más importante del videojuego puede ser descrito mediante este pse
 
 **Entradas**
 barraEspaciadoraPresionada, collisionDetectada, obstaculoSuperado
-
+```
 1. DEFINIR puntaje
 2. SI barraEspaciadoraPresionada:
 	- ACCION saltar
@@ -29,7 +29,7 @@ barraEspaciadoraPresionada, collisionDetectada, obstaculoSuperado
 	- SUMAR puntaje + 1
 5. SI collisionDetectada:
 	- ACCION destruirPajaro
-
+```
 **Salidas**
 puntaje
 
@@ -42,7 +42,7 @@ Nuestro proceso de redes neuronales puede describirse mediante dos pseudocódigo
 
 **Entradas**
 posicionYDelPajaro, distanciaXObstaculo, distanciaYAperturaDeObastaculo, posicionXObstaculo, posicionYAperturaDeObastaculo
-
+```
 1. NORMALIZAR posicionYDelPajaro, distanciaXObstaculo, distanciaYAperturaDeObastaculo, posicionXObstaculo, posicionYAperturaDeObastaculo
 2. DEFINIR prediccion
 3. DEFINIR accion
@@ -53,12 +53,12 @@ posicionYDelPajaro, distanciaXObstaculo, distanciaYAperturaDeObastaculo, posicio
 9. accion = caer
 10. PROCESAR controlarPajaro(accion)
 11.  LEER puntajeDePajaro
-
+```
 **Salidas**
 accion, puntajeDePajaro
 
 **Proceso Evolutivo**  
-
+```
 1. DEFINIR listaDeRedesNeuronales
 2. DEFINIR puntajeMasAlto = 0
 3. DEFINIR mejorRedNeuronal
@@ -75,3 +75,4 @@ accion, puntajeDePajaro
 			- puntajeMasAlto = redNeuronal.puntaje
 			- mejorRedNeuronal = redNeuronal
 6. ACCION mutar(mejorRedNeuronal)
+```

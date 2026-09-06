@@ -32,6 +32,9 @@ while running:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
+                if not startGame:
+                    startGame = True
+
                 bird.jump()
 
     # !!!! Render the game !!!!

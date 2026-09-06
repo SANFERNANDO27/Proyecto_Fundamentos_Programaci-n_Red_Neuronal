@@ -18,10 +18,10 @@ El videojuego tipo flappy bird funciona a partir de la librería pygame, la cual
 El algoritmo más importante del videojuego puede ser descrito mediante este pseudocódigo:
 
 **Entradas**
-barraEspaciadoraPresionada, collisionDetectada, obstaculoSuperado
+clickPresionado, collisionDetectada, obstaculoSuperado
 ```
 1. DEFINIR puntaje
-2. SI barraEspaciadoraPresionada:
+2. SI clickPresionado:
 	- ACCION saltar
 3. DE LO CONTRARIO:
 	- ACCION caer

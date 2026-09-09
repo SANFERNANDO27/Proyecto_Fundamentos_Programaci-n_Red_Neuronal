@@ -7,7 +7,7 @@ class Bird(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         # Define img
-        self.image = pygame.Surface((70, 70))
+        self.image = pygame.Surface((32, 24))
         self.image.fill("red")
 
         # Define and configure rect

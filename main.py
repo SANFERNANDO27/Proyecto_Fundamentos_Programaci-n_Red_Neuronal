@@ -1,10 +1,10 @@
 import pygame
 
 import constants
-from game_elements import pipes_and_gap
+import random
 from game_elements.bird.Bird import Bird
-from game_elements.dynamic_object.Dynamic_Object import Dynamic_Object
-from game_elements.pipes_and_gap.Pipes_And_Gap import Pipes_And_Gap
+from game_elements.dynamic_object.Dynamic_Object import BackgroundDynamicImage
+from game_elements.pipes_generator.Pipes_Generator import Pipes_Generator
 
 # pygame setup
 pygame.init()
@@ -19,9 +19,16 @@ bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2)
 birdGroup = pygame.sprite.Group()
 birdGroup.add(bird)
 
-# !!!! Pipes !!!!
-pipesGroup = pygame.sprite.Group()
-pipes_and_gap = Pipes_And_Gap(constants.WINDOW_WIDTH / 2 + 50, pipesGroup)
+# !!!! Create Background !!!!
+backgroundImage = random.choice(constants.BACKGROUND_IMAGE_LIST) # Select random background (day or night)
+background = BackgroundDynamicImage(backgroundImage)
+
+
+# !!!! Create Horizon !!!!
+horizon = BackgroundDynamicImage(constants.HORIZON_IMAGE)
+
+# !!!! Pipe generator !!!!
+pipesGenerator = Pipes_Generator()
 
 while running:
     # fill the screen with a color to wipe away anything from last frame
@@ -47,13 +54,17 @@ while running:
     # !!!! Render the game !!!!
 
     # Draw elements
+    background.draw(window)
+    pipesGenerator.draw(window)
+    horizon.draw(window)
     birdGroup.draw(window)
-    pipesGroup.draw(window)
 
     if startGame:
         # Update elements
-        birdGroup.update()
-        pipesGroup.update()
+        background.update()
+        pipesGenerator.update()
+        horizon.update()
+        birdGroup.update(window)
 
 
     # flip() the display to put your work on screen

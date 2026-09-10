@@ -13,7 +13,7 @@ class Dynamic_Object(pygame.sprite.Sprite):
         self.rect.x -= constants.DELTA_X
 
         # kill the object if  pass through window
-        if self.rect.left < 0:
+        if self.rect.right < 0:
             self.kill()
 
     def draw(self, window, draw_hitbox = False):

@@ -21,9 +21,7 @@ birdGroup.add(bird)
 
 # !!!! Pipes !!!!
 pipesGroup = pygame.sprite.Group()
-pipes_and_gap = Pipes_And_Gap(constants.WINDOW_WIDTH / 2 + 50)
-
-pipesGroup.add(pipes_and_gap)
+pipes_and_gap = Pipes_And_Gap(constants.WINDOW_WIDTH / 2 + 50, pipesGroup)
 
 while running:
     # fill the screen with a color to wipe away anything from last frame
@@ -50,11 +48,12 @@ while running:
 
     # Draw elements
     birdGroup.draw(window)
+    pipesGroup.draw(window)
 
     if startGame:
         # Update elements
         birdGroup.update()
-        pipesGroup.update(window)
+        pipesGroup.update()
 
 
     # flip() the display to put your work on screen

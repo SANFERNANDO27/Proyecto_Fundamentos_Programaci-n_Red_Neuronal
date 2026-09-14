@@ -1,0 +1,6 @@
+# Archivos de pycharm
+.idea
+
+# Cache
+__pycache__
+bird/__pycache__

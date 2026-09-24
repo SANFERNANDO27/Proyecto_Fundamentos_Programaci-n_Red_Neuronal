@@ -24,6 +24,9 @@ class Bird(pygame.sprite.Sprite):
         self.delta_y = 0
         self.jumping = False
 
+        # Alive
+        self.alive = True
+
     def updateAnimation(self):
         # Fly animation
         frame = self.animation[self.frameIndex]

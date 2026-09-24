@@ -52,6 +52,6 @@ class BackgroundDynamicImage(Dynamic_Object):
         if self.rect_index >= len(self.rect_list):
             self.rect_index = 0
 
-    def move(self):
+    def move(self, velocityMultiplier = 1):
         self.rect.x -= constants.DELTA_X
         self.rect2.x -= constants.DELTA_X

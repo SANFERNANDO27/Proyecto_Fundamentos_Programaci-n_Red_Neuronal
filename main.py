@@ -59,7 +59,7 @@ while running:
     horizon.draw(window)
     birdGroup.draw(window)
 
-    if startGame:
+    if startGame & bird.alive:
         # Update elements
         background.update()
         pipesGenerator.update()

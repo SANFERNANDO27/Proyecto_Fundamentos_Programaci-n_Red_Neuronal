@@ -25,4 +25,7 @@ class Pipes_Generator:
         self.generate()
         self.pipesGroup.update()
 
+    def getPipesGroup(self):
+        return self.pipesGroup
+
 

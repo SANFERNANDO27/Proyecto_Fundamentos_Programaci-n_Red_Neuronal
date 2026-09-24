@@ -1,6 +1,9 @@
 import pygame
 import math
 import random
+
+from pygame.sprite import Sprite
+
 import constants
 from utils.Utils import Timer
 
@@ -48,7 +51,9 @@ class Bird(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=self.rect.center)
 
     def jump(self):
-        self.delta_y = -constants.JUMPING_VELOCITY
+        # The bird can jump only if is alive
+        if self.alive:
+            self.delta_y = -constants.JUMPING_VELOCITY
 
     def set_jump(self):
         self.jumping = True
@@ -59,11 +64,17 @@ class Bird(pygame.sprite.Sprite):
         # Max velocity 10 px/sec
         self.rect.y += min(self.delta_y, 10)
 
+    def verifyCollision(self, obstacleGroup):
+        if pygame.sprite.spritecollide(self, obstacleGroup, False):
+            self.alive = False
+            #self.kill()
+
     def draw(self, window):
         pygame.draw.rect(window, "red", self.rect)
 
-    def update(self, window):
+    def update(self, window, obstacleGroup):
         #self.draw(window)
         self.updateAnimation()
         self.gravity()
+        self.verifyCollision(obstacleGroup)
 

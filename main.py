@@ -59,13 +59,14 @@ while running:
     horizon.draw(window)
     birdGroup.draw(window)
 
-    if startGame & bird.alive:
+    if startGame:
         # Update elements
         background.update()
         pipesGenerator.update()
         horizon.update()
-        birdGroup.update(window)
+        birdGroup.update(window, pipesGenerator.getPipesGroup())
 
+    # !!!! Game Over if the bird collide with a pipe !!!!
 
     # flip() the display to put your work on screen
     pygame.display.flip()

@@ -10,22 +10,28 @@ class Pipes_Generator:
     def __init__(self):
         self.timer = Timer()
         self.pipesGroup = pygame.sprite.Group()
+        self.gapsGroup = pygame.sprite.Group()
         self.pipeImg = random.choice(constants.PIPES_IMG_LIST) # Select a random pipe color
 
     def generate(self):
         if self.timer.get_seconds() > constants.GENERATION_TIME:
-            Pipes_And_Gap(constants.INITIAL_PIPES_X_POSE, self.pipesGroup, self.pipeImg)
+            Pipes_And_Gap(constants.INITIAL_PIPES_X_POSE, self.pipesGroup,  self.gapsGroup, self.pipeImg)
             self.timer.reset()
 
     def draw(self, window):
         self.pipesGroup.draw(window)
+        self.gapsGroup.draw(window)
 
     def update(self):
         self.timer.update()
         self.generate()
         self.pipesGroup.update()
+        self.gapsGroup.update()
 
     def getPipesGroup(self):
         return self.pipesGroup
+
+    def getGapsGroup(self):
+        return self.gapsGroup
 
 

@@ -5,7 +5,10 @@ from game_elements.dynamic_object.Dynamic_Object import Dynamic_Object
 
 
 class Pipes_And_Gap:
-    def __init__(self, x, pipesGroup: pygame.sprite.Group, pipeImg: pygame.sprite.Group):
+    def __init__(self, x,
+                 pipesGroup: pygame.sprite.Group,
+                 gapsGroup: pygame.sprite.Group,
+                 pipeImg: pygame.sprite.Group):
         # Create the gab
         gapYCenter = random.randint(constants.INITIAL_PIPES_Y_MIN_POSE, constants.INITIAL_PIPES_Y_MAX_POSE)
         gapSurface = pygame.Surface(constants.GAP_SIZE, pygame.SRCALPHA)
@@ -24,6 +27,6 @@ class Pipes_And_Gap:
         self.lowerPipe.rect.top = self.gap.rect.bottom
 
         # Add the dynamic object to the sprite group
-        pipesGroup.add(self.gap)
+        gapsGroup.add(self.gap)
         pipesGroup.add(self.upperPipe)
         pipesGroup.add(self.lowerPipe)

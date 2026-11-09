@@ -1,5 +1,10 @@
 import pygame
 
+def draw_text(text, color, size, position, window):
+    font = pygame.font.Font("assets/font/Flappybird_Number_Font.otf", size)
+    img = font.render(text, True, color)
+    window.blit(img, position)
+
 class Timer():
     def __init__(self):
         self.time = 0

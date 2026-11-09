@@ -32,9 +32,17 @@ class Bird(pygame.sprite.Sprite):
         self.animation = random.choice(constants.animationsList) # Select a random animation
         self.frameIndex = 0
         self.timer = Timer()
+        self.score = 0
 
         # Define img
         self.image = self.animation[self.frameIndex]
+
+        # Define sound effects
+        self.jumpSound = pygame.mixer.Sound("assets/audio/wing.wav")
+        self.pointSound = pygame.mixer.Sound("assets/audio/point.wav")
+        self.dieSound = pygame.mixer.Sound("assets/audio/die.wav")
+        self.hitSound = pygame.mixer.Sound("assets/audio/hit.wav")
+
 
         # Define and configure rect
         self.rect = self.image.get_rect()
@@ -48,6 +56,7 @@ class Bird(pygame.sprite.Sprite):
 
         # Alive
         self.alive = True
+        self.deadAngle = 0
 
     # this function manage the frame control of the flying animation.
     # It also calculates the angle of the bird when is jumping or falling
@@ -79,6 +88,7 @@ class Bird(pygame.sprite.Sprite):
         # The bird can jump only if is alive
         if self.alive:
             self.delta_y = -constants.JUMPING_VELOCITY
+            self.jumpSound.play()
 
     # This function control the gravity, so if the player
     # doesn't jump, the bird falls with constant acceleration.
@@ -91,14 +101,39 @@ class Bird(pygame.sprite.Sprite):
         # Center the hitbox to the image rect
         self.hitbox.center = self.rect.center
 
+    # Kill the bird and trigger the game over sound
+    def gameOver(self):
+        if self.alive:
+            self.hitSound.play()
+            self.dieSound.play()
+
+        self.alive = False
+
     # This function detects other elements that are in the parameter list.
     # If it detects an obstacle, the bird dies. If it detects a gap the score
     # increase by 1.
-    def verifyCollision(self, obstacleGroup):
+    def verifyCollision(self, obstacleGroup, gapGroup):
+        # Iterate for each obstacle to detect a collision
         for obstacle in obstacleGroup:
             if self.hitbox.colliderect(obstacle.rect):
-                self.alive = False
+                # Kill the bird in case of collision
+                self.gameOver()
                 #self.kill()
+
+        # Iterate for each gap to detect a collision
+        for gap in gapGroup:
+            if self.hitbox.colliderect(gap.rect) and self.alive:
+                # gain score if we pass through the gap
+                self.score += 1
+                self.pointSound.play()
+                # Kill the gap to avoid obtaining more than 1 point
+                gap.kill()
+
+    # Verify that the bird does not exceed the sky or the horizon
+    # In case that the bird over-escapes any of those, trigger the game over
+    def verifyLimits(self):
+        if self.rect.center[1] > 390 or self.rect.center[1] < -25:
+            self.gameOver()
 
     # This function draws the rect and hitbox of the bird.
     # It is not normally used in the game, is only made for debugging and for
@@ -107,11 +142,20 @@ class Bird(pygame.sprite.Sprite):
         pygame.draw.rect(window, "red", self.rect)
         pygame.draw.rect(window, "green", self.hitbox)
 
+    def getScore(self):
+        return self.score
+
     # This is the function that we call in the main module for execute all the
     # other important physics and animations functions
-    def update(self, window, obstacleGroup):
+    def update(self, window, obstacleGroup, gapGroup):
         #self.draw(window)
         self.updateAnimation()
         self.gravity()
-        self.verifyCollision(obstacleGroup)
+        self.verifyCollision(obstacleGroup, gapGroup)
+        self.verifyLimits()
+
+        # game over spinning effect
+        if not self.alive:
+            self.deadAngle -= 5
+            self.image = pygame.transform.rotate(self.animation[0], self.deadAngle)
 

@@ -56,7 +56,7 @@ PIPE_RED_IMG = pygame.image.load("assets/sprites/Pipe/pipe-red.png")
 PIPES_IMG_LIST = [PIPE_GREEN_IMG, PIPE_RED_IMG]
 
 PIPE_WIDTH = PIPE_GREEN_IMG.get_width()
-GAP_SIZE = (PIPE_WIDTH, BIRD_SPRITE_SIZE[1] * 4)
+GAP_SIZE = (1, BIRD_SPRITE_SIZE[1] * 4)
 
 INITIAL_PIPES_X_POSE = WINDOW_WIDTH + PIPE_WIDTH / 2
 INITIAL_PIPES_Y_MAX_POSE = 320
@@ -74,3 +74,7 @@ HORIZON_HEIGHT = HORIZON_IMAGE.get_height()
 BACKGROUND_DAY_IMAGE = pygame.image.load("assets/sprites/Background/background-day.png")
 BACKGROUND_NIGHT_IMAGE = pygame.image.load("assets/sprites/Background/background-night.png")
 BACKGROUND_IMAGE_LIST = [BACKGROUND_DAY_IMAGE, BACKGROUND_NIGHT_IMAGE]
+
+# Text
+SCORE_TEXT_SIZE = 30
+SCORE_TEXT_POSITION = (140, 20)

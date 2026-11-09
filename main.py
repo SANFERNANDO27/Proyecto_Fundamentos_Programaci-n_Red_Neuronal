@@ -10,6 +10,7 @@ and clock.
 The last one is the python native library, random. This last one
 only works for select the background theme.
 '''
+from tokenize import String
 
 import pygame
 
@@ -18,9 +19,11 @@ import random
 from game_elements.bird.Bird import Bird
 from game_elements.dynamic_object.Dynamic_Object import BackgroundDynamicImage
 from game_elements.pipes_generator.Pipes_Generator import Pipes_Generator
+from utils.Utils import draw_text
 
 # pygame setup (window, clock and flow variables)
 pygame.init()
+pygame.mixer.init()
 window = pygame.display.set_mode((constants.WINDOW_WIDTH, constants.WINDOW_HEIGHT))
 clock = pygame.time.Clock()
 
@@ -48,6 +51,13 @@ horizon = BackgroundDynamicImage(constants.HORIZON_IMAGE)
 
 # !!!! Pipe generator !!!!
 pipesGenerator = Pipes_Generator()
+
+# !!!! Score variable !!!!
+score = 0
+
+def drawScore():
+    text = str(score)
+    draw_text(text, pygame.Color("Black"), constants.SCORE_TEXT_SIZE, constants.SCORE_TEXT_POSITION, window)
 
 while running:
     # fill the screen with a color to wipe away anything from last frame
@@ -83,7 +93,11 @@ while running:
         background.update()
         pipesGenerator.update()
         horizon.update()
-        birdGroup.update(window, pipesGenerator.getPipesGroup())
+        birdGroup.update(window, pipesGenerator.getPipesGroup(), pipesGenerator.getGapsGroup())
+
+        # Update score and draw score
+        score = bird.getScore()
+        drawScore()
 
     # !!!! Game Over if the bird collide with a pipe !!!!
 

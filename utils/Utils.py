@@ -5,6 +5,9 @@ def draw_text(text, color, size, position, window):
     img = font.render(text, True, color)
     window.blit(img, position)
 
+def scale_image(image: pygame.surface.Surface, scale: float) -> pygame.surface.Surface:
+    return pygame.transform.scale(image, (image.get_width() * scale, image.get_height() * scale))
+
 class Timer():
     def __init__(self):
         self.time = 0

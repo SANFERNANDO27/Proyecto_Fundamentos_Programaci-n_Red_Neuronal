@@ -19,7 +19,7 @@ import random
 from game_elements.bird.Bird import Bird
 from game_elements.dynamic_object.Dynamic_Object import BackgroundDynamicImage
 from game_elements.pipes_generator.Pipes_Generator import Pipes_Generator
-from utils.Utils import draw_text
+from utils.Utils import draw_text, scale_image
 
 # pygame setup (window, clock and flow variables)
 pygame.init()
@@ -33,9 +33,11 @@ running = True
 # This variable control the game flow, if true the game will begin.
 startGame = False
 
-# Get ready img
+# Images
 getReadyImg = pygame.image.load("assets/sprites/Game_play/get_ready_message.png")
 gameOverImg = pygame.image.load("assets/sprites/Game_play/game_over.png")
+reloadButton = scale_image(pygame.image.load("assets/sprites/Game_play/reload_button.png"), 0.45)
+reloadButton.set_alpha(240) # Change opacity
 
 # !!!! Create Bird !!!!
 bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2)
@@ -64,7 +66,11 @@ def drawScore():
     draw_text(text, pygame.Color("Black"), constants.SCORE_TEXT_SIZE, constants.SCORE_TEXT_POSITION, window)
 
 def gameOver():
+    # Draw game over img
     window.blit(gameOverImg, constants.GAME_OVER_IMG_POSITION)
+
+    # Draw reload button
+    window.blit(reloadButton, constants.RELOAD_BUTTON_POSITION)
 
 while running:
     # fill the screen with a color to wipe away anything from last frame

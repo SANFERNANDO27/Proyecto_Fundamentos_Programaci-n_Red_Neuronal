@@ -33,6 +33,10 @@ running = True
 # This variable control the game flow, if true the game will begin.
 startGame = False
 
+# Get ready img
+getReadyImg = pygame.image.load("assets/sprites/Game_play/get_ready_message.png")
+gameOverImg = pygame.image.load("assets/sprites/Game_play/game_over.png")
+
 # !!!! Create Bird !!!!
 bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2)
 
@@ -58,6 +62,9 @@ score = 0
 def drawScore():
     text = str(score)
     draw_text(text, pygame.Color("Black"), constants.SCORE_TEXT_SIZE, constants.SCORE_TEXT_POSITION, window)
+
+def gameOver():
+    window.blit(gameOverImg, constants.GAME_OVER_IMG_POSITION)
 
 while running:
     # fill the screen with a color to wipe away anything from last frame
@@ -97,7 +104,14 @@ while running:
 
         # Update score and draw score
         score = bird.getScore()
+
         drawScore()
+
+        if not bird.isAlive():
+            gameOver()
+
+    else:
+        window.blit(getReadyImg, constants.GET_READY_IMG_POSITION)
 
     # !!!! Game Over if the bird collide with a pipe !!!!
 

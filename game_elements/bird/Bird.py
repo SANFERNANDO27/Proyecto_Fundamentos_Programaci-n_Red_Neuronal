@@ -145,6 +145,9 @@ class Bird(pygame.sprite.Sprite):
     def getScore(self):
         return self.score
 
+    def isAlive(self):
+        return self.alive
+
     # This is the function that we call in the main module for execute all the
     # other important physics and animations functions
     def update(self, window, obstacleGroup, gapGroup):

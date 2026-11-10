@@ -48,6 +48,11 @@ class Pipes_Generator:
         self.pipesGroup.draw(window)
         self.gapsGroup.draw(window)
 
+    def reset(self):
+        self.pipesGroup.empty()
+        self.gapsGroup.empty()
+        self.timer.reset()
+
     def update(self):
         self.timer.update()
         self.generate()

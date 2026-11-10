@@ -122,6 +122,7 @@ class Bird(pygame.sprite.Sprite):
 
         # Iterate for each gap to detect a collision
         for gap in gapGroup:
+            # Check if the bird is alive to avoid sum a point when falling in the dead effect
             if self.hitbox.colliderect(gap.rect) and self.alive:
                 # gain score if we pass through the gap
                 self.score += 1
@@ -141,6 +142,23 @@ class Bird(pygame.sprite.Sprite):
     def draw(self, window):
         pygame.draw.rect(window, "red", self.rect)
         pygame.draw.rect(window, "green", self.hitbox)
+
+    def reset(self, x, y):
+        # Revive
+        self.alive = True
+
+        # Reset position
+        self.rect.center = (x, y)
+
+        # Reset y velocity
+        self.delta_y = 0
+
+        # Reset animation
+        frame = self.animation[0]
+        self.image = pygame.transform.rotate(frame, 0)
+
+        # Reset score
+        self.score = 0
 
     def getScore(self):
         return self.score

@@ -39,6 +39,11 @@ gameOverImg = pygame.image.load("assets/sprites/Game_play/game_over.png")
 reloadButton = scale_image(pygame.image.load("assets/sprites/Game_play/reload_button.png"), 0.45)
 reloadButton.set_alpha(240) # Change opacity
 
+reloadButtonRect = reloadButton.get_rect(center=constants.RELOAD_BUTTON_POSITION)
+
+# Reloud sound effect
+reloadSound = pygame.mixer.Sound("assets/audio/swoosh.wav")
+
 # !!!! Create Bird !!!!
 bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2)
 
@@ -70,7 +75,21 @@ def gameOver():
     window.blit(gameOverImg, constants.GAME_OVER_IMG_POSITION)
 
     # Draw reload button
-    window.blit(reloadButton, constants.RELOAD_BUTTON_POSITION)
+    window.blit(reloadButton, reloadButtonRect)
+
+# Reset and reload the game
+def resetGame():
+    global startGame
+
+    # Stop the game
+    startGame = False
+
+    # Reset game elements state
+    bird.reset(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2)
+    pipesGenerator.reset()
+
+    # play the reload sound effect
+    reloadSound.play()
 
 while running:
     # fill the screen with a color to wipe away anything from last frame
@@ -93,6 +112,10 @@ while running:
 
                 bird.jump()
 
+            # Reload Button
+            if reloadButtonRect.collidepoint(event.pos) and not bird.isAlive():
+                resetGame()
+
     # !!!! Render the game !!!!
 
     # Draw elements
@@ -110,7 +133,6 @@ while running:
 
         # Update score and draw score
         score = bird.getScore()
-
         drawScore()
 
         if not bird.isAlive():
@@ -118,6 +140,8 @@ while running:
 
     else:
         window.blit(getReadyImg, constants.GET_READY_IMG_POSITION)
+
+    #print(run)
 
     # !!!! Game Over if the bird collide with a pipe !!!!
 

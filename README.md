@@ -5,11 +5,11 @@ El algoritmo en cuestión consta de dos partes:
 
 La primera es un videojuego de tipo flappy bird totalmente funcional el cual puede ser jugado por el usuario mediante entradas básicas. Este videojuego puedes ejecutarlo en el siguiente archivo:
 
-```bash mainGame.py ``` 
+```bash main.py ``` 
 
 La segunda parte es el mismo videojuego, pero ahora controlado por una red neuronal evolutiva. Este lo puedes ejecutar en el siguiente archivo:
 
-```bash mainNN.py ``` 
+```bash main_nn.py ``` 
 
 ## Funcionamiento del Videojuego
 

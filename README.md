@@ -41,7 +41,7 @@ Nuestro proceso de redes neuronales puede describirse mediante dos pseudocódigo
 **Red Neuronal:**
 
 **Entradas**
-posicionYDelPajaro, distanciaXObstaculo, distanciaYAperturaDeObastaculo, posicionXObstaculo, posicionYAperturaDeObastaculo (Todas de tipo float) 
+posicionYDelPajaro, velocidadYDelPajaro, distanciaYAperturaDeObastaculo, posicionXObstaculo, posicionYAperturaDeObastaculo (Todas de tipo float) 
 ```
 1. NORMALIZAR posicionYDelPajaro, distanciaXObstaculo, distanciaYAperturaDeObastaculo, posicionXObstaculo, posicionYAperturaDeObastaculo
 2. DEFINIR prediccion

@@ -11,6 +11,13 @@ La segunda parte es el mismo videojuego, pero ahora controlado por una red neuro
 
 ```bash main_nn.py ``` 
 
+## Librerias importantes
+Para lograr ejecutar el proyecto, antes debes tener instaladas las siguientes librerias:
+
+- Pygame: gestión del videojuego y físicas.
+- Numpy: operaciones con matrices.
+- Tensorflow: desarrollo de la red neuronal.
+
 ## Funcionamiento del Videojuego
 
 El videojuego tipo flappy bird funciona a partir de la librería pygame, la cual nos permite crear videojuegos sencillos utilizando el lenguaje de programación python

@@ -26,7 +26,6 @@ pygame.init()
 pygame.mixer.init()
 window = pygame.display.set_mode((constants.WINDOW_WIDTH, constants.WINDOW_HEIGHT))
 clock = pygame.time.Clock()
-frame = 0 # The frame of the game
 
 # This variable control the window flow, if true the window will run.
 running = True
@@ -90,7 +89,7 @@ def gameOver():
 
 # Create new birds and mutate their neural nets
 def resetAndMutateBirds():
-    learningRate = 0.05
+    learningRate = 0.1
     mutateProbability = 0.2
     elitism = 5 # The number of birds that will have the exactly same best nn without mutation
 
@@ -107,11 +106,6 @@ def resetAndMutateBirds():
 
 # Reset and reload the game
 def resetGame():
-    global frame
-
-    # reset game frame
-    frame = 0
-
     # Reset game elements state and create new birds
     resetAndMutateBirds()
     pipesGenerator.reset()
@@ -122,7 +116,7 @@ def resetGame():
 # Find the best neural network
 # It choose the models with the best score, with the most frame survived and those who were more close to pass through the gap
 def setBestNeuralNetwork():
-    global bestFitness
+    global bestFitness, bestNN
 
     for bird in birdGroup:
         fitness = bird.getFitness()
@@ -137,9 +131,6 @@ def setBestNeuralNetwork():
         print(f"best fitness: {bestFitness}, fitness: {fitness}")
 
 while running:
-    # Update game frame
-    frame += 1
-
     # fill the screen with a color to wipe away anything from last frame
     window.fill(constants.WINDOW_BACKGROUND_COLOR)
 
@@ -175,7 +166,7 @@ while running:
         background.update()
         pipesGenerator.update()
         horizon.update()
-        birdGroup.update(window, pipesGenerator.getPipesGroup(), pipesGenerator.getGapsGroup(), frame)
+        birdGroup.update(window, pipesGenerator.getPipesGroup(), pipesGenerator.getGapsGroup())
 
         # Update score and draw score
         if not isBirdGroupEmpty(): # Only update if we have birds

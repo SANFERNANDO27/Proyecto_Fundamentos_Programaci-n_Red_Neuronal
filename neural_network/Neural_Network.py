@@ -22,7 +22,7 @@ class Neural_Network:
         self.model = keras.Sequential([
             # Hidden ReLu layers
             layers.Dense(units=8, activation='relu', input_shape=[5]),
-            layers.Dense(units=8, activation='relu'),
+            #layers.Dense(units=8, activation='relu'),
             # Output layer
             layers.Dense(units=1, activation='sigmoid')
         ])

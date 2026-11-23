@@ -20,23 +20,28 @@ import math
 import random
 import tensorflow as tf
 import constants
+from pygame import Rect
 
 from pygame.sprite import Sprite
 from neural_network.Neural_Network import Neural_Network
+from tensorflow.python.framework.test_ops import none
 from utils.Utils import Timer
 
 
 class Bird(pygame.sprite.Sprite):
-    def __init__(self, x, y, neuralNetwork = Neural_Network()):
+    def __init__(self, x, y, neuralNetwork =None):
         # Define neural network
-        self.neuralNetwork = neuralNetwork
+        if neuralNetwork is None:
+            self.neuralNetwork = Neural_Network()
+        else:
+            self.neuralNetwork = neuralNetwork
 
         pygame.sprite.Sprite.__init__(self)
         # Define animation
         self.animation = random.choice(constants.animationsList) # Select a random animation
         self.frameIndex = 0
         self.timer = Timer()
-        self.gameFrame = 0
+        self.framesAlive = 0
         self.score = 0 # Fitness 1, the score
         self.bestYDistance = 1000 # Fitness 2, the y distance to the gap
 
@@ -178,7 +183,7 @@ class Bird(pygame.sprite.Sprite):
     # Where score are the points of the bird, f the frames survived, K is the proximity recompence and d is the y gap distance
     def getFitness(self):
         score = self.getScore()
-        frames = self.gameFrame
+        frames = self.framesAlive
         yDistance = self.bestYDistance
         K = 10
 
@@ -195,7 +200,7 @@ class Bird(pygame.sprite.Sprite):
 
     # Neural Network variables
     def getYPosition(self):
-        return self.rect.y
+        return self.rect.centery
 
     def getXPosition(self):
         return self.rect.x
@@ -211,7 +216,7 @@ class Bird(pygame.sprite.Sprite):
         # Verify if we have obstacles
         if len(obstacleGroup) > 0:
             closestObstacleXPosition = 0
-            closestDistance = constants.WINDOW_WIDTH / 2  # An irreal initial distance to always replace it (window width)
+            closestDistance = float("inf")  # An irreal initial distance to always replace it (window width)
 
             # Find the closest obstacle by x distance
             # The distance can not be 0 to avoid the nn detect pipes at the back
@@ -232,24 +237,25 @@ class Bird(pygame.sprite.Sprite):
     # Format: closestGapYPosition, closestDistance
     # If the gap group is empty, returns 2 zeros: 0, 0
     def getClosestGap(self, gapGroup):
-        # Verify if we have obstacles
-        if len(gapGroup) > 0:
-            closestGapYPosition = 0
-            closestDistance = constants.WINDOW_HEIGHT  # An irreal initial distance to always replace it (window width)
 
-            # Find the closest gap on the x-axis
-            # The distance can not be 0 to avoid the nn detect pipes at the back
-            for gap in gapGroup:
-                distance = gap.rect.left - self.getXPosition()
+        closestGap = None
+        closestXDistance = float("inf")
 
-                if distance > 0 and distance < closestDistance:
-                    # Define closest gap
-                    closestGapYPosition = gap.rect.y
-                    closestDistance = closestGapYPosition - self.getYPosition() # Return y difference
+        for gap in gapGroup:
 
-            return closestGapYPosition, closestDistance
+            xDistance = gap.rect.left - self.rect.centerx
 
-        return constants.WINDOW_HEIGHT / 2, constants.WINDOW_HEIGHT / 2
+            if xDistance >= 0 and xDistance < closestXDistance:
+                closestXDistance = xDistance
+                closestGap = gap
+
+        if closestGap is None:
+            return constants.WINDOW_HEIGHT / 2, constants.WINDOW_HEIGHT / 2
+
+        gapY = closestGap.rect.centery
+        yDistance = gapY - self.rect.centery
+
+        return gapY, yDistance
 
     # Get the neural network of the bird
     def getNeuralNetwork(self):
@@ -257,14 +263,11 @@ class Bird(pygame.sprite.Sprite):
 
     # This is the function that we call in the main module for execute all the
     # other important physics and animations functions
-    def update(self, window, obstacleGroup, gapGroup, gameFrame):
+    def update(self, window, obstacleGroup, gapGroup):
         self.updateAnimation()
         self.gravity()
         self.verifyCollision(obstacleGroup, gapGroup)
         self.verifyLimits()
-
-        # Update game frame
-        self.gameFrame = gameFrame
 
         # Neural Network control
 
@@ -276,8 +279,8 @@ class Bird(pygame.sprite.Sprite):
         # Divide over window width and height to mantain the input variables between -1 and 1
 
         inputs = tf.convert_to_tensor([
-                [self.getYPosition() / constants.WINDOW_HEIGHT,
-                 self.getYVelocity() / 100,
+                [self.rect.centery / constants.WINDOW_HEIGHT,
+                 self.delta_y / 100,
                  obstacleXDistance / constants.WINDOW_WIDTH,
                  gapYPosition / constants.WINDOW_HEIGHT,
                  gapYDistance / constants.WINDOW_HEIGHT]
@@ -297,6 +300,7 @@ class Bird(pygame.sprite.Sprite):
         # We only do this when the bird is alive
         if self.alive:
             self.bestYDistance = min(self.bestYDistance, abs(gapYDistance))
+            self.framesAlive += 1 # Update the frames alive
 
         else:
             # game over spinning effect

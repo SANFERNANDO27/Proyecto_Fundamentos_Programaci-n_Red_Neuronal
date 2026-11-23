@@ -221,11 +221,11 @@ class Bird(pygame.sprite.Sprite):
             # Find the closest obstacle by x distance
             # The distance can not be 0 to avoid the nn detect pipes at the back
             for obstacle in obstacleGroup:
-                distance = obstacle.rect.left - self.getXPosition()
+                distance = obstacle.rect.centerx - self.getXPosition()
 
                 if distance > 0 and distance < closestDistance:
                     # Define closest obstacle
-                    closestObstacleXPosition = obstacle.rect.left
+                    closestObstacleXPosition = obstacle.rect.centerx
                     closestDistance = distance
 
             return closestObstacleXPosition, closestDistance
@@ -243,7 +243,7 @@ class Bird(pygame.sprite.Sprite):
 
         for gap in gapGroup:
 
-            xDistance = gap.rect.left - self.rect.centerx
+            xDistance = gap.rect.centerx - self.rect.centerx
 
             if xDistance >= 0 and xDistance < closestXDistance:
                 closestXDistance = xDistance

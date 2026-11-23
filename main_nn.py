@@ -10,12 +10,12 @@ and clock.
 The last one is the python native library, random. This last one
 only works for select the background theme.
 '''
-from tokenize import String
-
 import pygame
 
 import constants
 import random
+import copy
+import numpy as np
 from game_elements.bird.Bird_NN import Bird
 from game_elements.dynamic_object.Dynamic_Object import BackgroundDynamicImage
 from game_elements.pipes_generator.Pipes_Generator import Pipes_Generator
@@ -26,6 +26,7 @@ pygame.init()
 pygame.mixer.init()
 window = pygame.display.set_mode((constants.WINDOW_WIDTH, constants.WINDOW_HEIGHT))
 clock = pygame.time.Clock()
+frame = 0 # The frame of the game
 
 # This variable control the window flow, if true the window will run.
 running = True
@@ -44,12 +45,14 @@ reloadButtonRect = reloadButton.get_rect(center=constants.RELOAD_BUTTON_POSITION
 # Reloud sound effect
 reloadSound = pygame.mixer.Sound("assets/audio/swoosh.wav")
 
-# !!!! Create Bird !!!!
-bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2)
-
 # Create the bird list (this is made like this to make easier the Neural Network training)
 birdGroup = pygame.sprite.Group()
-birdGroup.add(bird)
+
+# !!!! Create Birds !!!!
+birdsNum = 60
+for i in range(birdsNum):
+    bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2)
+    birdGroup.add(bird)
 
 # !!!! Create Background !!!!
 # Select randomly between two background images (day and night)
@@ -66,32 +69,77 @@ pipesGenerator = Pipes_Generator()
 # !!!! Score variable !!!!
 score = 0
 
+# !!!! Best neural network !!!!
+bestFitness = 0
+bestNN = list(birdGroup)[0].getNeuralNetwork()
+
+def isBirdGroupEmpty():
+    return len(birdGroup) == 0
+
 def drawScore():
     text = str(score)
     draw_text(text, pygame.Color("Black"), constants.SCORE_TEXT_SIZE, constants.SCORE_TEXT_POSITION, window)
 
 def gameOver():
-    # Draw game over img
+    '''# Draw game over img
     window.blit(gameOverImg, constants.GAME_OVER_IMG_POSITION)
 
     # Draw reload button
-    window.blit(reloadButton, reloadButtonRect)
+    window.blit(reloadButton, reloadButtonRect)'''
+    resetGame()
+
+# Create new birds and mutate their neural nets
+def resetAndMutateBirds():
+    learningRate = 0.05
+    mutateProbability = 0.2
+    elitism = 5 # The number of birds that will have the exactly same best nn without mutation
+
+    for i in range(birdsNum):
+        # Define a new neural network based on the best one
+        nn = copy.deepcopy(bestNN)
+
+        if i > elitism:
+            nn.mutate(learningRate, mutateProbability)
+
+        # Create the new bird
+        bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2, nn)
+        birdGroup.add(bird)
 
 # Reset and reload the game
 def resetGame():
-    global startGame
+    global frame
 
-    # Stop the game
-    startGame = False
+    # reset game frame
+    frame = 0
 
-    # Reset game elements state
-    bird.reset(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2)
+    # Reset game elements state and create new birds
+    resetAndMutateBirds()
     pipesGenerator.reset()
 
     # play the reload sound effect
     reloadSound.play()
 
+# Find the best neural network
+# It choose the models with the best score, with the most frame survived and those who were more close to pass through the gap
+def setBestNeuralNetwork():
+    global bestFitness
+
+    for bird in birdGroup:
+        fitness = bird.getFitness()
+
+        # Check if the bird have best score
+        if fitness > bestFitness:
+            # Set the new score record
+            bestFitness = fitness
+            # Update the new best nn
+            bestNN = bird.getNeuralNetwork()
+
+        print(f"best fitness: {bestFitness}, fitness: {fitness}")
+
 while running:
+    # Update game frame
+    frame += 1
+
     # fill the screen with a color to wipe away anything from last frame
     window.fill(constants.WINDOW_BACKGROUND_COLOR)
 
@@ -110,10 +158,8 @@ while running:
                 if not startGame:
                     startGame = True
 
-                bird.jump()
-
             # Reload Button
-            if reloadButtonRect.collidepoint(event.pos) and not bird.isAlive():
+            if reloadButtonRect.collidepoint(event.pos) and isBirdGroupEmpty():
                 resetGame()
 
     # !!!! Render the game !!!!
@@ -129,19 +175,20 @@ while running:
         background.update()
         pipesGenerator.update()
         horizon.update()
-        birdGroup.update(window, pipesGenerator.getPipesGroup(), pipesGenerator.getGapsGroup())
+        birdGroup.update(window, pipesGenerator.getPipesGroup(), pipesGenerator.getGapsGroup(), frame)
 
         # Update score and draw score
-        score = bird.getScore()
+        if not isBirdGroupEmpty(): # Only update if we have birds
+            score = list(birdGroup)[0].getScore()
+            setBestNeuralNetwork() # Update best neural network
+
         drawScore()
 
-        if not bird.isAlive():
+        if isBirdGroupEmpty():
             gameOver()
 
     else:
         window.blit(getReadyImg, constants.GET_READY_IMG_POSITION)
-
-    #print(run)
 
     # !!!! Game Over if the bird collide with a pipe !!!!
 

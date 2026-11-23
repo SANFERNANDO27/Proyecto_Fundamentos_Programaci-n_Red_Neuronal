@@ -36,7 +36,9 @@ class Bird(pygame.sprite.Sprite):
         self.animation = random.choice(constants.animationsList) # Select a random animation
         self.frameIndex = 0
         self.timer = Timer()
-        self.score = 0
+        self.gameFrame = 0
+        self.score = 0 # Fitness 1, the score
+        self.bestYDistance = 1000 # Fitness 2, the y distance to the gap
 
         # Define img
         self.image = self.animation[self.frameIndex]
@@ -90,9 +92,10 @@ class Bird(pygame.sprite.Sprite):
     # This cancel the gravity for a moment and propels upwards the bird
     def jump(self):
         # The bird can jump only if is alive
-        if self.alive:
+        # also the bird only can jump if delta y is negative, so the nn cannot spam the jump
+        if self.alive and self.delta_y > 0:
             self.delta_y = -constants.JUMPING_VELOCITY
-            self.jumpSound.play()
+            #self.jumpSound.play()
 
     # This function control the gravity, so if the player
     # doesn't jump, the bird falls with constant acceleration.
@@ -122,7 +125,6 @@ class Bird(pygame.sprite.Sprite):
             if self.hitbox.colliderect(obstacle.rect):
                 # Kill the bird in case of collision
                 self.gameOver()
-                #self.kill()
 
         # Iterate for each gap to detect a collision
         for gap in gapGroup:
@@ -137,8 +139,13 @@ class Bird(pygame.sprite.Sprite):
     # Verify that the bird does not exceed the sky or the horizon
     # In case that the bird over-escapes any of those, trigger the game over
     def verifyLimits(self):
-        if self.rect.center[1] > 390 or self.rect.center[1] < -25:
+        yPosition = self.rect.center[1]
+        if yPosition > 390 or yPosition < -25:
             self.gameOver()
+
+        # Delete the bird if it falls out the window
+        if yPosition > constants.WINDOW_HEIGHT:
+            self.kill()
 
     # This function draws the rect and hitbox of the bird.
     # It is not normally used in the game, is only made for debugging and for
@@ -167,6 +174,22 @@ class Bird(pygame.sprite.Sprite):
     def getScore(self):
         return self.score
 
+    # Get the fitness: 100score + 0.1f + K/(1 + d)
+    # Where score are the points of the bird, f the frames survived, K is the proximity recompence and d is the y gap distance
+    def getFitness(self):
+        score = self.getScore()
+        frames = self.gameFrame
+        yDistance = self.bestYDistance
+        K = 10
+
+        fitness = (
+            score * 100 +
+            frames * 0.1 +
+            K / (1 + yDistance)
+        )
+
+        return fitness
+
     def isAlive(self):
         return self.alive
 
@@ -176,6 +199,9 @@ class Bird(pygame.sprite.Sprite):
 
     def getXPosition(self):
         return self.rect.x
+
+    def getYVelocity(self):
+        return self.delta_y
 
     # Returns the x position of the closest obstacle and the x distance between the bird and the obstacle as a tupple
     # The x referene point of the pipe is the left, this to let the nn identify when the bird leaves the pipe
@@ -223,33 +249,38 @@ class Bird(pygame.sprite.Sprite):
 
             return closestGapYPosition, closestDistance
 
-        return 0.0, 0.0
+        return constants.WINDOW_HEIGHT / 2, constants.WINDOW_HEIGHT / 2
 
+    # Get the neural network of the bird
+    def getNeuralNetwork(self):
+        return self.neuralNetwork
 
     # This is the function that we call in the main module for execute all the
     # other important physics and animations functions
-    def update(self, window, obstacleGroup, gapGroup):
-        #self.draw(window)
+    def update(self, window, obstacleGroup, gapGroup, gameFrame):
         self.updateAnimation()
         self.gravity()
         self.verifyCollision(obstacleGroup, gapGroup)
         self.verifyLimits()
 
+        # Update game frame
+        self.gameFrame = gameFrame
+
         # Neural Network control
 
         # Define and preprocess inputs
-        obstacleXPosition, obsctaleXDistance = self.getClosestObstacle(obstacleGroup)
+        obstacleXPosition, obstacleXDistance = self.getClosestObstacle(obstacleGroup)
         gapYPosition, gapYDistance = self.getClosestGap(gapGroup)
 
-        # The inputs are: y bird position, obstacle x position, obstacle x distance, gap y position and gap y distance
-        # Divide over 1000 to mantain the inputs between 0 and 1
+        # The inputs are: y bird position, y bird velocity, obstacle x distance, gap y position and gap y distance
+        # Divide over window width and height to mantain the input variables between -1 and 1
 
         inputs = tf.convert_to_tensor([
-                [self.getYPosition() / 1000,
-                 obstacleXPosition / 1000,
-                 obsctaleXDistance / 1000,
-                 gapYPosition / 1000,
-                 gapYDistance / 1000]
+                [self.getYPosition() / constants.WINDOW_HEIGHT,
+                 self.getYVelocity() / 100,
+                 obstacleXDistance / constants.WINDOW_WIDTH,
+                 gapYPosition / constants.WINDOW_HEIGHT,
+                 gapYDistance / constants.WINDOW_HEIGHT]
             ], dtype=tf.float32)
 
         # Predict the action
@@ -261,10 +292,14 @@ class Bird(pygame.sprite.Sprite):
         if prediction >= 0.5:
             self.jump()
 
-        print(prediction)
+        # Define the fitness, in this case the absolute gapYDistance
+        # This will help us find the birds that were more closer to pass trough a gap
+        # We only do this when the bird is alive
+        if self.alive:
+            self.bestYDistance = min(self.bestYDistance, abs(gapYDistance))
 
-        # game over spinning effect
-        if not self.alive:
+        else:
+            # game over spinning effect
             self.deadAngle -= 5
             self.image = pygame.transform.rotate(self.animation[0], self.deadAngle)
 

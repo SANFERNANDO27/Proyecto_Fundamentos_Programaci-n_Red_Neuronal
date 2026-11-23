@@ -1,21 +1,18 @@
 '''
-This module contains the main class.
-This class has the intention to bring together all the game elements.
-It also manages the window, the button bindings, the game score and
-the game flow.
+This module is similar to the main class, with the difference that it spawns 50 birds to play simultaneously.
+It also removes player controls and handles file saving and loading.
 
-This module haves some important libraries, the first is the pygame
-library, that manages the window creation, the sprites, animations
-and clock.
-The last one is the python native library, random. This last one
-only works for select the background theme.
+This module haves some important libraries:
+- pygame: manages the window creation, the sprites, animations and clock.
+- random: Manages some random operations.
+- Copy: It is used to create copies of objects such that changes to these copies do not affect the original.
+- os: It is used to check whether a file for a previously saved model exists.
 '''
 import pygame
 
 import constants
 import random
 import copy
-import numpy as np
 import os
 from game_elements.bird.Bird_NN import Bird
 from game_elements.dynamic_object.Dynamic_Object import BackgroundDynamicImage
@@ -59,8 +56,7 @@ horizon = BackgroundDynamicImage(constants.HORIZON_IMAGE)
 pipesGenerator = Pipes_Generator()
 
 # !!!! Score variable !!!!
-score = 0
-
+bestScore = 0
 # !!!! Best neural network !!!!
 bestFitness = 0
 bestNN = None
@@ -69,6 +65,7 @@ bestNN = None
 birdsNum = 50
 birdGroup = pygame.sprite.Group()
 
+# Check if we have a saved model and load it
 def loadModel():
     global bestNN
 
@@ -101,6 +98,8 @@ def resetAndMutateBirds(birdGroup, birdsNum):
         bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2, nn)
         birdGroup.add(bird)
 
+# Create new birds. If we have a saved model, we clone and mutate the nn.
+# Else, we create new ones
 def createBirds(birdGroup, birdsNum):
     if bestNN is None:
         for i in range(birdsNum):
@@ -109,30 +108,34 @@ def createBirds(birdGroup, birdsNum):
     else:
         resetAndMutateBirds(birdGroup, birdsNum)
 
+# Check if the birds list is empty
 def isBirdGroupEmpty():
     return len(birdGroup) == 0
 
+# Draw the score on the top of the window
 def drawScore():
-    text = str(score)
+    text = str(bestScore)
     draw_text(text, pygame.Color("Black"), constants.SCORE_TEXT_SIZE, constants.SCORE_TEXT_POSITION, window)
 
+# Reset the game if all the birds die
 def gameOver():
-    '''# Draw game over img
-    window.blit(gameOverImg, constants.GAME_OVER_IMG_POSITION)
-
-    # Draw reload button
-    window.blit(reloadButton, reloadButtonRect)'''
     resetGame()
 
 # Reset and reload the game
 def resetGame():
+    global bestScore
+
     # Reset game elements state and create new birds
     resetAndMutateBirds(birdGroup, 50)
     pipesGenerator.reset()
 
+    # Reset score
+    bestScore = 0
+
     # play the reload sound effect
     reloadSound.play()
 
+# Save the best neural network in keras format
 def saveBestModel():
     nnDir = "neural_network"
     bestNNPath = constants.BEST_MODEL_PATH
@@ -145,15 +148,17 @@ def saveBestModel():
 # Find the best neural network
 # It choose the models with the best score, with the most frame survived and those who were more close to pass through the gap
 def setBestNeuralNetwork():
-    global bestFitness, bestNN
+    global bestFitness, bestScore, bestNN
 
     for bird in birdGroup:
         fitness = bird.getFitness()
+        score = bird.getScore()
 
         # Check if the bird have best score
         if fitness > bestFitness:
             # Set the new score record
             bestFitness = fitness
+            bestScore = score
             # Update the new best nn
             bestNN = bird.getNeuralNetwork()
 
@@ -206,7 +211,6 @@ while running:
 
         # Update score and draw score
         if not isBirdGroupEmpty(): # Only update if we have birds
-            score = list(birdGroup)[0].getScore()
             setBestNeuralNetwork() # Update best neural network
 
         drawScore()

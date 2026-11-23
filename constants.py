@@ -1,3 +1,8 @@
+'''
+This module is used to store constants that are utilized throughout the project.
+It only includes the Pygame library for handling images.
+'''
+
 import pygame
 
 # Window

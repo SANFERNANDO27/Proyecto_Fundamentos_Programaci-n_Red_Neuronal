@@ -1,3 +1,14 @@
+'''
+This file contains two classes. The first is `Pipes_And_Gap`, which describes a set consisting of two pipes and an
+opening; these move together along the x-axis. The second class is `Pipes_Generator`, which, as the name suggests, acts
+as a generator for `Pipes_And_Gap` objects. This class is responsible for creating obstacles and targets at regular
+intervals.
+
+This module includes 2 libraries:
+- pygame: for physics and sprites
+- random: to choice between sprites and to generate a random opening position
+'''
+
 import pygame
 
 import constants

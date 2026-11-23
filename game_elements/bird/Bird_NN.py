@@ -1,13 +1,13 @@
 '''
-This class is made for the main character of te game, the bird
-It works as a pygame.Sprite child, so it needs and image, and a rect.
-(A rect is a 2D geometric figure that describe the movement and collisions
-of a game element)
+This is a modified version of the bird class. It functions in a similar way, with the difference that a neural network
+controls its operation.
 
-This module includes 3 important libraries:
+This module includes 4 important libraries:
 - pygame: for physics render and animations
 - math: for some angle calculations
 - random: to choice between tree sprites (blue, red or yellow bird)
+- tensorflow: controls the conversion of inputs into tensors
+
 
 The idea of the bird is that it only moves along the y-axis and all
 the other game elements moves toward the bird. This creates and
@@ -245,7 +245,8 @@ class Bird(pygame.sprite.Sprite):
 
             xDistance = gap.rect.centerx - self.rect.centerx
 
-            if xDistance >= 0 and xDistance < closestXDistance:
+            #if xDistance >= 0 and xDistance < closestXDistance:
+            if xDistance < closestXDistance:
                 closestXDistance = xDistance
                 closestGap = gap
 

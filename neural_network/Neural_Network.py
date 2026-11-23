@@ -1,15 +1,17 @@
 '''
 This module contains the Artificial Intelligence model that will play the game.
-The model is made with three important libraries: keras and tensor flow.
 It consists of a neural network of 5 input variables, 1 hidden layer of 8 neurons (ReLu activation)
-and 2 outputs.
+and 1 output.
 
 The inputs are: y bird position, bird y velocity, obstacle x distance, gap y position and gap y distance
-The outputs are: jump probability vs do nothing probability
+The output are: jump probability
 
 The train method is evolutive. We set several birds play, and then we select the one with the best score.
 Then we clone the best bird several times and mutate each of its children. We repeat this cycle until
 we get an efficient model.
+
+This class includes 3 libraries: TensorFlow for neural network development, Keras for tensor handling, and NumPy for
+various operations and matrix generation.
 '''
 from asyncio import constants
 

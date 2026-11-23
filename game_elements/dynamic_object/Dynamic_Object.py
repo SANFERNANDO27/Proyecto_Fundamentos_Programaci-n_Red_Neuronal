@@ -1,3 +1,12 @@
+'''
+This file defines two classes: Dynamic_Object and BackgroundDynamicImage. Dynamic_Object is a class that creates objects
+that—as the name suggests—are dynamic; specifically, models that move along the x-axis. BackgroundDynamicImage is a
+class that inherits from the former; however, it contains two segments that overlap to create the effect of a repeating
+background.
+
+This file contains only the Pygame library, used for managing rects, sprites, and physics.
+'''
+
 import pygame
 
 import constants

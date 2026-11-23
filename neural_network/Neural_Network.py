@@ -1,7 +1,7 @@
 '''
 This module contains the Artificial Intelligence model that will play the game.
 The model is made with three important libraries: keras and tensor flow.
-It consists of a neural network of 5 input variables, 2 hidden layers of 16 neurons (ReLu activation)
+It consists of a neural network of 5 input variables, 1 hidden layer of 8 neurons (ReLu activation)
 and 2 outputs.
 
 The inputs are: y bird position, bird y velocity, obstacle x distance, gap y position and gap y distance
@@ -11,6 +11,7 @@ The train method is evolutive. We set several birds play, and then we select the
 Then we clone the best bird several times and mutate each of its children. We repeat this cycle until
 we get an efficient model.
 '''
+from asyncio import constants
 
 import tensorflow as tf
 import numpy as np
@@ -22,7 +23,7 @@ class Neural_Network:
         self.model = keras.Sequential([
             # Hidden ReLu layers
             layers.Dense(units=8, activation='relu', input_shape=[5]),
-            #layers.Dense(units=8, activation='relu'),
+            layers.Dense(units=8, activation='relu'),
             # Output layer
             layers.Dense(units=1, activation='sigmoid')
         ])
@@ -63,4 +64,15 @@ class Neural_Network:
 
             # Apply the mutation to the neural net
             layer.set_weights([W, b])
+
+    def saveModel(self, path="best_model.keras"):
+        self.model.save(path)
+        print("model saved correctly")
+
+    @staticmethod
+    def loadModel(path="best_model.keras"):
+        nn = Neural_Network()
+        nn.model = keras.models.load_model(path)
+
+        return nn
 

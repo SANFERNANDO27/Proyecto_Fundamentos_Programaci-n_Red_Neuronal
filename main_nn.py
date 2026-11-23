@@ -16,10 +16,12 @@ import constants
 import random
 import copy
 import numpy as np
+import os
 from game_elements.bird.Bird_NN import Bird
 from game_elements.dynamic_object.Dynamic_Object import BackgroundDynamicImage
 from game_elements.pipes_generator.Pipes_Generator import Pipes_Generator
 from utils.Utils import draw_text, scale_image
+from neural_network.Neural_Network import Neural_Network
 
 # pygame setup (window, clock and flow variables)
 pygame.init()
@@ -44,15 +46,6 @@ reloadButtonRect = reloadButton.get_rect(center=constants.RELOAD_BUTTON_POSITION
 # Reloud sound effect
 reloadSound = pygame.mixer.Sound("assets/audio/swoosh.wav")
 
-# Create the bird list (this is made like this to make easier the Neural Network training)
-birdGroup = pygame.sprite.Group()
-
-# !!!! Create Birds !!!!
-birdsNum = 60
-for i in range(birdsNum):
-    bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2)
-    birdGroup.add(bird)
-
 # !!!! Create Background !!!!
 # Select randomly between two background images (day and night)
 backgroundImage = random.choice(constants.BACKGROUND_IMAGE_LIST) # Select random background (day or night)
@@ -70,7 +63,51 @@ score = 0
 
 # !!!! Best neural network !!!!
 bestFitness = 0
-bestNN = list(birdGroup)[0].getNeuralNetwork()
+bestNN = None
+
+# Create the bird list (this is made like this to make easier the Neural Network training)
+birdsNum = 50
+birdGroup = pygame.sprite.Group()
+
+def loadModel():
+    global bestNN
+
+    nnDir = "neural_network"
+    bestNNPath = constants.BEST_MODEL_PATH
+    pathList = [nnDir, bestNNPath]
+
+    path = "/".join(pathList)
+
+    if os.path.exists(path):
+        bestNN = Neural_Network.loadModel(path)
+        print("Model loaded correctly")
+    else:
+        print("No model found")
+
+# Create new birds and mutate their neural nets
+def resetAndMutateBirds(birdGroup, birdsNum):
+    learningRate = 0.05
+    mutateProbability = 0.1
+    elitism = 1 # The number of birds that will have the exactly same best nn without mutation
+
+    for i in range(birdsNum):
+        # Define a new neural network based on the best one
+        nn = copy.deepcopy(bestNN)
+
+        if i > elitism:
+            nn.mutate(learningRate, mutateProbability)
+
+        # Create the new bird
+        bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2, nn)
+        birdGroup.add(bird)
+
+def createBirds(birdGroup, birdsNum):
+    if bestNN is None:
+        for i in range(birdsNum):
+            bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2)
+            birdGroup.add(bird)
+    else:
+        resetAndMutateBirds(birdGroup, birdsNum)
 
 def isBirdGroupEmpty():
     return len(birdGroup) == 0
@@ -87,31 +124,23 @@ def gameOver():
     window.blit(reloadButton, reloadButtonRect)'''
     resetGame()
 
-# Create new birds and mutate their neural nets
-def resetAndMutateBirds():
-    learningRate = 0.1
-    mutateProbability = 0.2
-    elitism = 5 # The number of birds that will have the exactly same best nn without mutation
-
-    for i in range(birdsNum):
-        # Define a new neural network based on the best one
-        nn = copy.deepcopy(bestNN)
-
-        if i > elitism:
-            nn.mutate(learningRate, mutateProbability)
-
-        # Create the new bird
-        bird = Bird(constants.WINDOW_WIDTH / 2, constants.WINDOW_HEIGHT / 2, nn)
-        birdGroup.add(bird)
-
 # Reset and reload the game
 def resetGame():
     # Reset game elements state and create new birds
-    resetAndMutateBirds()
+    resetAndMutateBirds(birdGroup, 50)
     pipesGenerator.reset()
 
     # play the reload sound effect
     reloadSound.play()
+
+def saveBestModel():
+    nnDir = "neural_network"
+    bestNNPath = constants.BEST_MODEL_PATH
+    pathList = [nnDir, bestNNPath]
+
+    path = "/".join(pathList)
+
+    bestNN.saveModel(path)
 
 # Find the best neural network
 # It choose the models with the best score, with the most frame survived and those who were more close to pass through the gap
@@ -128,7 +157,13 @@ def setBestNeuralNetwork():
             # Update the new best nn
             bestNN = bird.getNeuralNetwork()
 
-        print(f"best fitness: {bestFitness}, fitness: {fitness}")
+        #print(f"best fitness: {bestFitness}, fitness: {fitness}")
+
+# Load model if exist
+loadModel()
+
+# !!!! Create Birds !!!!
+createBirds(birdGroup, 50)
 
 while running:
     # fill the screen with a color to wipe away anything from last frame
@@ -138,6 +173,7 @@ while running:
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            saveBestModel()
             running = False
 
         if event.type == pygame.KEYDOWN:

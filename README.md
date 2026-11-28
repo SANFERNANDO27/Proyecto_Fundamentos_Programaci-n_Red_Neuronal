@@ -11,12 +11,57 @@ La segunda parte es el mismo videojuego, pero ahora controlado por una red neuro
 
 ```bash main_nn.py ``` 
 
-## Librerias importantes
-Para lograr ejecutar el proyecto, antes debes tener instaladas las siguientes librerias:
+## Librerías y dependencias
+Para ejecutar el proyecto necesitas Python y las siguientes librerías. Las instrucciones de instalación se ejecutan desde una terminal, preferentemente con el entorno virtual del proyecto activado.
 
-- Pygame: gestión del videojuego y físicas.
-- Numpy: operaciones con matrices.
-- Tensorflow: desarrollo de la red neuronal.
+### Librerías que debes instalar
+
+- **Pygame:** gestión del videojuego y sus físicas.
+  ```bash
+  python -m pip install pygame
+  ```
+  Documentación: https://www.pygame.org/docs/
+
+- **NumPy:** operaciones con matrices y arreglos numéricos.
+  ```bash
+  python -m pip install numpy
+  ```
+  Documentación: https://numpy.org/doc/stable/
+
+- **TensorFlow:** desarrollo y ejecución de la red neuronal.
+  ```bash
+  python -m pip install --upgrade pip
+  python -m pip install tensorflow
+  ```
+  Documentación: https://www.tensorflow.org/learn
+  Guía de instalación: https://www.tensorflow.org/install
+
+  **Nota:** TensorFlow no es compatible con todas las versiones de Python. Antes de instalarlo, consulta los requisitos de la versión actual en la guía oficial. La guía de instalación con pip indica compatibilidad con Python 3.10 a 3.13 para la versión documentada actualmente.
+
+### Módulos incluidos en Python
+
+Los siguientes módulos forman parte de la biblioteca estándar de Python. **No necesitas instalarlos con pip**; basta con importarlos en el código.
+
+- **math:** funciones y constantes matemáticas. No requiere instalación.
+  Documentación: https://docs.python.org/3/library/math.html
+
+- **random:** generación de números y selecciones pseudoaleatorias. No requiere instalación.
+  Documentación: https://docs.python.org/3/library/random.html
+
+- **copy:** creación de copias superficiales y profundas de objetos. No requiere instalación.
+  Documentación: https://docs.python.org/3/library/copy.html
+
+- **os:** interacción con el sistema operativo y manejo de rutas y archivos. No requiere instalación.
+  Documentación: https://docs.python.org/3/library/os.html
+
+### Instalación rápida
+
+Si ya tienes una versión compatible de Python y `pip` configurado, puedes instalar las tres dependencias externas ejecutando:
+
+```bash
+python -m pip install pygame numpy tensorflow
+```
+
 
 ## Funcionamiento del Videojuego
 

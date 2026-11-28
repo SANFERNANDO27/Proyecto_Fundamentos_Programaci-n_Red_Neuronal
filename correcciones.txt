@@ -1,0 +1,24 @@
+Avance 1, idea del proyecto:
+
+- Correcciones en: README.md (https://github.com/SANFERNANDO27/Proyecto_Fundamentos_Programaci-n_Red_Neuronal/blob/main/README.md)
+
+Avance 3:
+
+- Funciones Bird.py (https://github.com/SANFERNANDO27/Proyecto_Fundamentos_Programaci-n_Red_Neuronal/blob/main/game_elements/bird/Bird.py), ej: línea 115 para verificar colisiones.
+
+Avance 6, listas:
+
+- Listas de objetos en: constants.py (https://github.com/SANFERNANDO27/Proyecto_Fundamentos_Programaci-n_Red_Neuronal/blob/main/constants.py), ej: línea 29 para guardar animaciones.
+
+Avance 7, matrices:
+
+- Matrices en: Bird_NN.py (https://github.com/SANFERNANDO27/Proyecto_Fundamentos_Programaci-n_Red_Neuronal/blob/main/game_elements/bird/Bird_NN.py), ej: línea 282 para conversión de matrices a tensores o en Neural_Network.py (https://github.com/SANFERNANDO27/Proyecto_Fundamentos_Programaci-n_Red_Neuronal/blob/main/neural_network/Neural_Network.py) para las capas de neuronas.
+
+Avance 8, strings: 
+
+- Manipulación en: main_nn.py (https://github.com/SANFERNANDO27/Proyecto_Fundamentos_Programaci-n_Red_Neuronal/blob/main/main_nn.py), ej: línea 26 para buscar el path del modelo.
+
+Avance 9, archivos:
+- Archivos en: Neural_Network.py (https://github.com/SANFERNANDO27/Proyecto_Fundamentos_Programaci-n_Red_Neuronal/blob/main/neural_network/Neural_Network.py), ej: línea 71 para guardar el modelo actual en formato keras.
+
+Si tiene alguna duda o inquietud, no dude en escribirme o decírmelo en persona. Agradezco muchísimo su comprensión y le deseo un bonito fin de semana. Atentamente: Santiago Fernando Murguia Maldonado A01711632.
